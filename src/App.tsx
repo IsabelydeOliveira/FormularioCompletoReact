@@ -13,15 +13,15 @@ const createUserFormShema = z.object({
     }).join(' ')
   }),
   email: z.string()
-  .min(1, { message: 'E-mail é obrigatório!' }).email('formato de e-mail invalida!'),
+  .min(1, 'E-mail é obrigatório!' ).email('formato de e-mail invalida!'),
   
   password: z.string()
-  .min(6, {message:'Senha precisa ter no mínimo 6 caracteres'}),
+  .min(6,'Senha precisa ter no mínimo 6 caracteres'),
 
   tech: z.array(z.object({
     title: z.string().min(1,{message: 'O título é abrigatório!'}) ,
-    knowledge: z.number().min(1).max(100),
-  }))
+    knowledge: z.coerce.number().min(1).max(100),
+  })).min(2, 'no mínimo 2 tecnologia!')
 
 })
  
@@ -49,7 +49,7 @@ export function App() {
   } 
 
   return (
-   <main className='h-screen bg-zinc-950 text-zinc-300 flex flex-col gap-10 items-center justify-center'>
+   <main className='h-dvh bg-zinc-900 text-zinc-300 flex flex-col gap-10 items-center justify-center'>
     <form onSubmit={handleSubmit(createUser)} className='flex flex-col gap-4 w-full max-w-sm'>
     <div className='flex flex-col gap-1'>
         <label htmlFor='name'>Nome</label>     
@@ -58,7 +58,7 @@ export function App() {
         className='border border-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-900 text-white'
         {...register('name')}
         />
-        {errors.name && <span>{errors.name.message}</span>}
+        {errors.name && <span className='text-red-500'>{errors.name.message}</span>}
       </div>
       <div className='flex flex-col gap-1'>
         <label htmlFor='email'>E-mail</label>     
@@ -67,7 +67,7 @@ export function App() {
         className='border border-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-900 text-white'
         {...register('email')}
         />
-        {errors.email && <span>{errors.email.message}</span>}
+        {errors.email && <span className='text-red-500'>{errors.email.message}</span>}
       </div>
       <div className='flex flex-col gap- 1'>
         <label htmlFor='password'>Password</label>
@@ -76,7 +76,7 @@ export function App() {
         className='border border-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-900 text-white'
         {...register('password')}
         />
-         {errors.password && <span>{errors.password.message}</span>}
+         {errors.password && <span className='text-red-500'>{errors.password.message}</span>}
       </div>
 
       <div className='flex flex-col gap- 1'>
@@ -91,25 +91,30 @@ export function App() {
     {fields.map((field, index) => {
       return(
         <div className='flex gap-2' key={field.id}>
+          <div className='flex-1 flex-col gap- 1'>
         <input
         type='text'
-        className='flex-1 borderborder-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-900 text-white'
+        className=' border *:border-zinc-600 shadow-sm rounded h-10 px-2 bg-zinc-900 text-white'
         {...register(`tech.${index}.title`)}
-        />     
-        {/* {errors.tech?{index}?.title && <span>{errors}</span>} */}
+        />   
+        {errors.tech?.[index]?.title && <span className='text-red-500'>{errors.tech?.[index]?.title?.message}</span>}
+         </div>
+         <div className='flex flex-col gap- 1'> 
         <input
         type='number'
-        className=' w-16 flex-1 border border-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-900 text-white'
+        className=' w-16 flex-1 border border-zinc-600 shadow-sm rounded h-10 px-2 bg-zinc-900 text-white'
         {...register(`tech.${index}.knowledge`)}
         />
+          {errors.tech?.[index]?.knowledge && <span className='text-red-500'>{errors.tech?.[index]?.knowledge?.message}</span>}
         </div>
-        
+        </div>        
       )
     })}
+         {errors.tech && <span className='text-red-500'>{errors.tech.message}</span >}
        </div>
 
     <button 
-    type='button'
+    type='submit'
     className='bg-emerald-500 rounded font-semibold text-white h-10 hover:bg-emerald-600'
     >
       Salvar
