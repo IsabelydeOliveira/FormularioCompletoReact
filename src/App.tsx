@@ -4,33 +4,14 @@ import './styles/global.css';
 import {useForm, useFieldArray} from 'react-hook-form'
 import {z} from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
-
-const createUserFormShema = z.object({
-  name: z.string().min(1,{message: 'Campo nome é obrigatório!'})
-  .transform(name => {
-    return name.trim().split(' ').map(word=>{
-      return word[0].toLocaleUpperCase().concat(word.substring(1))
-    }).join(' ')
-  }),
-  email: z.string()
-  .min(1, 'E-mail é obrigatório!' ).email('formato de e-mail invalida!'),
-  
-  password: z.string()
-  .min(6,'Senha precisa ter no mínimo 6 caracteres'),
-
-  tech: z.array(z.object({
-    title: z.string().min(1,{message: 'O título é abrigatório!'}) ,
-    knowledge: z.coerce.number().min(1).max(100),
-  })).min(2, 'no mínimo 2 tecnologia!')
-
-})
+import { createUserFormData } from './shemas/shemaFormulario';
  
-type createUserFormData = z.infer<typeof createUserFormShema>
+type createUserFormData = z.infer<typeof createUserFormData>
 
 export function App() {
   const [output, setOuput] = useState('')
   const {register, handleSubmit, control, formState:{errors}} = useForm<createUserFormData>({
-      resolver:zodResolver(createUserFormShema),
+      resolver:zodResolver(createUserFormData),
   })
 
   const {fields, append, remove} = useFieldArray ({
@@ -42,9 +23,7 @@ export function App() {
   append({title: '', knowledge: 0})
  }
 
-  Function
-
-  function createUser(data: any){
+  function createUser(data: createUserFormData){
     setOuput(JSON.stringify(data, null, 2))
   } 
 
